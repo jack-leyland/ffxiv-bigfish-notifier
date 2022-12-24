@@ -1,11 +1,14 @@
 /**
- * Unchanged source from Carbuncle Plushy's ff14-fish-tracker-app
+ * Source from Carbuncle Plushy's ff14-fish-tracker-app.
+ * 
+ * Edits for the notifier include wrapping all original exports from this file 
+ * into a single default export "dateFns" object so that it conforms with the usage
+ * of the functions throughout the rest of the original project. 
+ * 
  * Original file: https://github.com/icykoneko/ff14-fish-tracker-app/blob/master/src/main.js
  */
 
-import { add, areIntervalsOverlapping, sub, toDate } from 'date-fns';
-
-export {
+import {
     add,
     addMinutes,
     addHours,
@@ -38,30 +41,66 @@ export {
     toDate
 } from 'date-fns';
 
-export { default as defaultLocale } from 'date-fns/locale/en-US';
+import * as utc from './carby-utc-fns.js';
 
-export * as utc from './carby-utc-fns';
+import { default as defaultLocale } from 'date-fns/locale/en-US/index.js';
 
-export function isSameOrAfter(dirtyDate, dirtyDateToCompare) {
+let dateFns = {
+    add,
+    addMinutes,
+    addHours,
+    areIntervalsOverlapping,
+    compareAsc,
+    differenceInMilliseconds,
+    differenceInMinutes,
+    differenceInSeconds,
+    eachMinuteOfInterval,
+    format,
+    formatDistance,
+    formatDistanceStrict,
+    formatDuration,
+    formatISO,
+    formatRelative,
+    getDayOfYear,
+    getHours,
+    intervalToDuration,
+    isAfter,
+    isBefore,
+    isEqual,
+    isWithinInterval,
+    milliseconds,
+    setHours,
+    startOfHour,
+    startOfMinute,
+    sub,
+    subDays,
+    subHours,
+    toDate,
+    utc,
+    defaultLocale
+}
+
+
+dateFns.isSameOrAfter = function (dirtyDate, dirtyDateToCompare) {
     const date = toDate(dirtyDate);
     const dateToCompare = toDate(dirtyDateToCompare);
     return date.getTime() >= dateToCompare.getTime();
 }
 
-export function isSameOrBefore(dirtyDate, dirtyDateToCompare) {
+dateFns.isSameOrBefore = function (dirtyDate, dirtyDateToCompare) {
     const date = toDate(dirtyDate);
     const dateToCompare = toDate(dirtyDateToCompare);
     return date.getTime() <= dateToCompare.getTime();
 }
 
-export function intervalAfter(dirtyDate, duration) {
+dateFns.intervalAfter = function (dirtyDate, duration) {
     const date = toDate(dirtyDate);
-    return {start: date, end: add(date, duration)};
+    return { start: date, end: add(date, duration) };
 }
 
-export function intervalBefore(dirtyDate, duration) {
+dateFns.intervalBefore = function (dirtyDate, duration) {
     const date = toDate(dirtyDate);
-    return {start: sub(date, duration), end: date};
+    return { start: sub(date, duration), end: date };
 }
 
 // Based on Luxon's implementatin for durations.
@@ -88,17 +127,17 @@ function antiTrunc(n) {
 
 function convert(matrix, fromMap, fromUnit, toMap, toUnit) {
     const conv = matrix[toUnit][fromUnit],
-          raw = fromMap[fromUnit] / conv,
-          sameSign = Math.sign(raw) === Math.sign(toMap[toUnit]),
-          added = !sameSign && toMap[toUnit] !== 0 && Math.abs(raw) <= 1 ? antiTrunc(raw) : Math.trunc(raw);
+        raw = fromMap[fromUnit] / conv,
+        sameSign = Math.sign(raw) === Math.sign(toMap[toUnit]),
+        added = !sameSign && toMap[toUnit] !== 0 && Math.abs(raw) <= 1 ? antiTrunc(raw) : Math.trunc(raw);
     toMap[toUnit] += added;
     fromMap[fromUnit] -= added * conv;
 }
 
-export function normalizeDuration(dirtyDuration) {
+dateFns.normalizeDuration = function (dirtyDuration) {
     const built = {},
-          accumulated = {},
-          vals = Object.fromEntries(Object.entries(dirtyDuration));
+        accumulated = {},
+        vals = Object.fromEntries(Object.entries(dirtyDuration));
     let lastUnit;
 
     for (const k of ORDERED_UNITS) {
@@ -112,7 +151,7 @@ export function normalizeDuration(dirtyDuration) {
         }
 
         // Plus anything that's already in this unit.
-        if (typeof(vals[k]) === 'number') {
+        if (typeof (vals[k]) === 'number') {
             own += vals[k];
         }
 
@@ -139,7 +178,7 @@ export function normalizeDuration(dirtyDuration) {
     // Normalize it.
     REVERSED_UNITS.reduce((prev, curr) => {
         // Check if the input has this unit.
-        if (!(typeof(built[curr]) === 'undefined')) {
+        if (!(typeof (built[curr]) === 'undefined')) {
             if (prev) {
                 // Update the duration
                 convert(LOW_ORDER_MATRIX, built, prev, built, curr);
@@ -155,19 +194,19 @@ export function normalizeDuration(dirtyDuration) {
 // Using Luxon's implementation for intervals.
 // https://github.com/moment/luxon
 
-export function doesintervalAbutStart(dirtyInterval, dirtyOtherInterval) {
+dateFns.doesintervalAbutStart = function (dirtyInterval, dirtyOtherInterval) {
     const intervalEndTime = toDate(dirtyInterval.end).getTime();
     const otherIntervalStartTime = toDate(dirtyOtherInterval.start).getTime();
     return intervalEndTime === otherIntervalStartTime;
 }
 
-export function doesIntervalAbutEnd(dirtyInterval, dirtyOtherInterval) {
+dateFns.doesIntervalAbutEnd = function (dirtyInterval, dirtyOtherInterval) {
     const intervalStartTime = toDate(dirtyInterval.start).getTime();
     const otherIntervalEndTime = toDate(dirtyOtherInterval.end).getTime();
     return otherIntervalEndTime === intervalStartTime;
 }
 
-export function intervalUnion(interval, otherInterval) {
+dateFns.intervalUnion = function (interval, otherInterval) {
     const intervalStartTime = toDate(interval.start).getTime();
     const intervalEndTime = toDate(interval.end).getTime();
     const otherIntervalStartTime = toDate(otherInterval.start).getTime();
@@ -178,7 +217,7 @@ export function intervalUnion(interval, otherInterval) {
     return { start: start, end: end };
 }
 
-export function intervalIntersection(interval, otherInterval) {
+dateFns.intervalIntersection = function (interval, otherInterval) {
     const intervalStartTime = toDate(interval.start).getTime();
     const intervalEndTime = toDate(interval.end).getTime();
     const otherIntervalStartTime = toDate(otherInterval.start).getTime();
@@ -194,15 +233,15 @@ export function intervalIntersection(interval, otherInterval) {
     }
 }
 
-export function intervalMerge(intervals) {
+dateFns.intervalMerge = function (intervals) {
     const [found, final] = intervals
         .sort((a, b) => a.start - b.start)
         .reduce(
             ([sofar, current], item) => {
                 if (!current) {
                     return [sofar, item];
-                } else if (areIntervalsOverlapping(current, item) || doesintervalAbutStart(current, item)) {
-                    return [sofar, intervalUnion(current, item)];
+                } else if (areIntervalsOverlapping(current, item) || dateFns.doesintervalAbutStart(current, item)) {
+                    return [sofar, dateFns.intervalUnion(current, item)];
                 } else {
                     return [sofar.concat([current]), item];
                 }
@@ -215,17 +254,17 @@ export function intervalMerge(intervals) {
     return found;
 }
 
-export function intervalXor(...intervals) {
+dateFns.intervalXor = function (...intervals) {
     // Using Luxon's implementation for intervals.
     let start = null,
         currentCount = 0;
     const results = [],
-          ends = intervals.map((i) => [
-              { time: i.start, type: "s" },
-              { time: i.end, type: "e" },
-          ]),
-          flattened = Array.prototype.concat(...ends),
-          arr = flattened.sort((a, b) => a.time - b.time);
+        ends = intervals.map((i) => [
+            { time: i.start, type: "s" },
+            { time: i.end, type: "e" },
+        ]),
+        flattened = Array.prototype.concat(...ends),
+        arr = flattened.sort((a, b) => a.time - b.time);
 
     for (const i of arr) {
         currentCount += i.type === "s" ? 1 : -1;
@@ -234,12 +273,14 @@ export function intervalXor(...intervals) {
             start = i.time;
         } else {
             if (start && +start !== +i.time) {
-                results.push({start: start, end: i.time});
+                results.push({ start: start, end: i.time });
             }
 
             start = null;
         }
     }
 
-    return intervalMerge(results);
+    return dateFns.intervalMerge(results);
 }
+
+export default dateFns;

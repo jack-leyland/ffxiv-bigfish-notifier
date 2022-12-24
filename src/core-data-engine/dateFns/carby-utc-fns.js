@@ -1,12 +1,13 @@
 /**
- * Unchanged source from Carbuncle Plushy's ff14-fish-tracker-app
+ * Source from Carbuncle Plushy's ff14-fish-tracker-app
+ * Small changes to imports.
  * Original file: https://github.com/icykoneko/ff14-fish-tracker-app/blob/master/src/dateFns/utc/index.js
  */
 
 import { toDate } from 'date-fns'
-import toInteger from 'date-fns/_lib/toInteger/index'
-import requiredArgs from 'date-fns/_lib/requiredArgs/index'
-import getTimezoneOffsetInMilliseconds from 'date-fns/_lib/getTimezoneOffsetInMilliseconds/index'
+import toInteger from 'date-fns/_lib/toInteger/index.js'
+import requiredArgs from 'date-fns/_lib/requiredArgs/index.js'
+import getTimezoneOffsetInMilliseconds from 'date-fns/_lib/getTimezoneOffsetInMilliseconds/index.js'
 
 import { addHours as addHoursOrig,
          addMilliseconds as addMillisecondsOrig,
