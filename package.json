@@ -1,0 +1,26 @@
+{
+  "name": "ffxiv-bigfish-notifier",
+  "version": "0.0.1",
+  "description": "Configurable notification service for FFXIV big fishing",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": "git+https://github.com/jack-leyland/ffxiv-bigfish-notifier.git",
+  "author": "Jack Leyland",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/jack-leyland/ffxiv-bigfish-notifier/issues"
+  },
+  "homepage": "https://github.com/jack-leyland/ffxiv-bigfish-notifier#readme",
+  "dependencies": {
+    "date-fns": "^2.29.3",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
