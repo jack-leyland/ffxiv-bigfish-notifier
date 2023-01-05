@@ -1,11 +1,21 @@
 import express from 'express'
-import { ViewModel } from './src/core-data-engine/viewmodel.js'
+import mongoose from "mongoose"
 
+import { ViewModel as DataSource } from './src/fish-data-engine/viewmodel.js'
 const app = express()
 
-let mainView = new ViewModel()
+try  {
+  await mongoose.connect('mongodb://127.0.0.1:27017/ffxiv-bigfish-notifier')
+  console.log("DB connection successful")
+} catch (err) {
+  console.error("DB Connection Error:")
+  console.error(err)
+  console.error("Aborting App start.")
+  process.exit(1)
+}
 
-//app.use(express.static(__dirname, {maxAge: 2592000000}))
+let fishDataSource = new DataSource()
+fishDataSource.initialize()
 
 app.listen(3000, function() {
   console.log('Listing on port 3000!')
