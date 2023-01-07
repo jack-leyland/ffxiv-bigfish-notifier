@@ -1,11 +1,12 @@
 /**
  * Source from Carbuncle Plushy's ff14-fish-tracker-app.
- * 
- * Edits for the notifier include wrapping all original exports from this file 
- * into a single default export "dateFns" object so that it conforms with the usage
- * of the functions throughout the rest of the original project. 
- * 
- * Original file: https://github.com/icykoneko/ff14-fish-tracker-app/blob/master/src/main.js
+ *
+ * Edits include wrapping all original exports from this file
+ * into a single default export "dateFns" object so that it conforms with the
+ * usage of the functions throughout the rest of the original project. 
+ *
+ * Original file:
+ * https://github.com/icykoneko/ff14-fish-tracker-app/blob/master/src/main.js
  */
 
 import {

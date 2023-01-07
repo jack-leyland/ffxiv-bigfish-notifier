@@ -1,13 +1,13 @@
 /**
  * Source from Carbuncle Plushy's ff14-fish-tracker-app.
- * 
- * Edits to this file include mainly switching to ESM and remove some fish eyes related functionality that we don't need.
- * 
+ *
+ * Edits to this file include mainly switching to ESM and remove some fish eyes
+ * related functionality that we don't need.
+ *
  * Original project: https://github.com/icykoneko/ff14-fish-tracker-app/
  */
 
 import _ from "underscore"
-import rxjs from "rxjs"
 
 import { Fishes } from "./fish.js";
 import { eorzeaTime } from "./time.js";

@@ -11,28 +11,16 @@ const FishSchema = new Schema({
         type: String,
         required: true,
     },
-    bigFish: {
+    big_fish: {
         type: Boolean,
-        required: true,
-    },
-    alwaysAvailable: {
-        type: Boolean,
-        required: true,
-    },
-    //these numbers are unix epochs
-    windows: {
-        type:  [{
-            start: {
-                type: Number
-            },
-            end: {
-                type: Number
-            }
-        }],
         required: true,
     },
     intuition_fishIds: {
         type: [Number],
+    },
+    always_available: {
+        type: Boolean,
+        required: true,
     },
 })
 

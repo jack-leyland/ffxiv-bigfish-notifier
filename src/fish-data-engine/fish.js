@@ -1,8 +1,9 @@
 /**
  * Source from Carbuncle Plushy's ff14-fish-tracker-app.
- * 
- * Few edits made to this particular file, outside of accomodating the switch to ESM bundling. 
- * 
+ *
+ * Few edits made to this particular file, outside of accomodating the switch to
+ * ESM bundling. 
+ *
  * Original project: https://github.com/icykoneko/ff14-fish-tracker-app/
  */
 

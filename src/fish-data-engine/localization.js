@@ -1,13 +1,14 @@
 /**
  * Source from Carbuncle Plushy's ff14-fish-tracker-app.
- * 
- * Edits to this file include mainly switching to ESM and removing some browser 
- * related logic and the monkeypatch for 'date-fns/locale/en-US/_lib/formatRelative'.
- * 
- * Remains to be seen wether any of this localization stuff is really needed at all. 
- * In reality, we probably only need the fish ID, and name localization logic can be implemented
- * specifically for the notifier.
- * 
+ *
+ * Edits to this file include mainly switching to ESM and removing some browser
+ * related logic and the monkeypatch for
+ * 'date-fns/locale/en-US/_lib/formatRelative'.
+ *
+ * Remains to be seen wether any of this localization stuff is really needed at
+ * all. In reality, we probably only need the fish ID, and name localization
+ * logic can be implemented specifically for the notifier.
+ *
  * Original project: https://github.com/icykoneko/ff14-fish-tracker-app/
  */
 

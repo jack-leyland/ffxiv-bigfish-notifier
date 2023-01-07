@@ -1,7 +1,10 @@
 /**
- * Source from Carbuncle Plushy's ff14-fish-tracker-app
- * Small changes to imports.
- * Original file: https://github.com/icykoneko/ff14-fish-tracker-app/blob/master/src/dateFns/utc/index.js
+ * Source from Carbuncle Plushy's ff14-fish-tracker-app 
+ *
+ * Small changes to imports. 
+ *
+ * Original file:
+ *  https://github.com/icykoneko/ff14-fish-tracker-app/blob/master/src/dateFns/utc/index.js
  */
 
 import { toDate } from 'date-fns'

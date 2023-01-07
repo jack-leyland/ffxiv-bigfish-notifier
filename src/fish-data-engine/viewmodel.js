@@ -1,33 +1,37 @@
 /**
  * Source from Carbuncle Plushy's ff14-fish-tracker-app.
- * 
- * Prepare for a nice long comment here since I have essentially taken a giant battle axe
- * to most of Carby's original file.
- * 
- * What I have essentially done here is strip aways all of the UI related functionality 
- * from the viewmodel (as you can image that is most of it). That means: all the HTML/DOM
- * stuff, everything related to site settings, marking fish as completed, activiting fish eyes and 
- * all of the user event handling code. Basically, the only surviving functionality in the 
- * viewmodel is the stuff that is related to the timer subscriptions. Essentially, 
- * this is just updating all of the data objects for the fish as if there was still a UI,
- * and all of the fish are available (not marked as complete). Instead of displaying that data
- * (the fishEntries structure), I am just sending it to my own code to be parsed and filtered
- * down to only what I need to enable a rolling database of fish windows around which I can build the
- * notification functionality. 
- * 
- * The fishEntry objects contains way more data than we actually need, but since I admittedly
- * don't fully understand how it's all calculated, I am just sending it away somewhere else to be 
- * stipped down rather than simplfying it here. Not the most efficient solution in the world, 
- * but it should work. Before I realized Carby's app was open source, my original idea 
- * was gonna be to just periodically scrape the website, so this it at least still better than that lol.
- * 
+ *
+ * Prepare for a nice long comment here since I have essentially taken a giant
+ * battle axe to most of Carby's original file.
+ *
+ * What I have essentially done here is strip aways all of the UI related
+ * functionality from the viewmodel (as you can image that is most of it). That
+ * means: all the HTML/DOM stuff, everything related to site settings, marking
+ * fish as completed, activiting fish eyes and all of the user event handling
+ * code. Basically, the only surviving functionality in the viewmodel is the
+ * stuff that is related to the timer subscriptions. Essentially, this is just
+ * updating all of the data objects for the fish as if there was still a UI, and
+ * all of the fish are available (not marked as complete). Instead of displaying
+ * that data (the fishEntries structure), I am just sending it to my own code to
+ * be parsed and filtered down to only what I need to enable the timers I need
+ * for the notifications. 
+ *
+ * The fishEntry objects contains way more data than we actually need, but since
+ * I admittedly don't fully understand how it's all calculated, I am just
+ * sending it away somewhere else to be stipped down rather than simplfying it
+ * here. Not the most efficient solution in the world, but it should work.
+ * Before I realized Carby's app was open source, my original idea was gonna be
+ * to just periodically scrape the website, so this it at least still better
+ * than doing that lol.
+ *
  * Eventually, whenever I find the time to fully figure out how this all works
- * with the weather, catchable range calculations, bells etc... I will eventually 
- * just reimplement all that in my own way such that its more purpose built for just enabling 
- * notifications, rather than supporting an entire app, which of course is what this code was orginally for.
- * 
+ * with the weather, catchable range calculations, bells etc... I might just
+ * reimplement all that in my own way such that its more purpose built for just
+ * enabling notifications, rather than supporting an entire app, which of course
+ * is what this code was orginally for.
+ *
  * Thanks for making this Carby I love the original app <3
- * 
+ *
  * Original project: https://github.com/icykoneko/ff14-fish-tracker-app/
  */
 
@@ -50,9 +54,7 @@ import _ from "underscore"
 import { Fishes } from "./fish.js";
 import { eorzeaTime } from "./time.js";
 import { Subject, merge, interval, buffer, debounceTime, map, filter, timestamp } from "rxjs"
-import FishEntryProcessor from "../notification-service/FishEntryProcessor.js";
 
-const fishEntryProcessor = new FishEntryProcessor()
 const weatherService = new WeatherService()
 const fishWatcher = new FishWatcher(weatherService)
 
@@ -91,9 +93,20 @@ class BaitEntry {
     return null;
   }
 }
-
+/**
+ * JL Note:
+ * For simplicity, we give each fishEntry the ability to send its
+ * updates to the FishEntryProcessor within its update function.
+ * 
+ * The processor passed must be a reference to the one passed to the
+ * viewmodel in the entry file. 
+ * 
+ */
 class FishEntry {
-  constructor(fish) {
+  constructor(fish, processor) {
+
+    this.processor = processor
+
     // TODO:
     this.active = false;
     this.id = fish.id;
@@ -267,7 +280,8 @@ class FishEntry {
     }
 
     //Every time the entry gets updated, we send the updated object to the processor.
-    fishEntryProcessor.ingestEntry(this)
+    this.processor.ingestEntry(this)
+    this.processor.ensureDatabaseState(this)
   }
 }
 
@@ -275,21 +289,23 @@ class IntuitionFishEntry extends FishEntry {
   // TODO: If we are independently tracking this fish, have IntuitionFishEntry
   // just point at the main FishEntry for that fish.
 
-  constructor(fish, intuitionForFish, count) {
-    super(fish);
+  constructor(fish, processor, intuitionForFish, count) {
+    super(fish, processor);
     this.intuitionCount = count;
     this.intuitionFor = intuitionForFish;
   }
 }
 
 export class ViewModel {
-  constructor() {
+  constructor(fishEntryProcessor) {
 
+    this.processor = fishEntryProcessor;
     // Initialize everything!
     // NOTE: The fish data itself is already initialized as `Fishes`.
     // Fish entries contains those entries we want to display.
-    // JL: In our case we want to "display" everything, since the catchable
-    //     range data we want is not kept in that original 'Fishes' object.
+    
+    // JL: In our case we want to "display" everything, since the window data 
+    // we want is not kept in that original 'Fishes' object.
     this.fishEntries = {}
 
     // The entry being used for upcoming windows modal.
@@ -455,7 +471,8 @@ export class ViewModel {
       // this!
       _(Fishes).chain()
         .each(fish => {
-          this.activateEntry(fish, timestamp)});
+          this.activateEntry(fish, timestamp)
+        });
 
     }
 
@@ -474,7 +491,7 @@ export class ViewModel {
   }
 
   createEntry(fish, earthTime) {
-    let entry = new FishEntry(fish);
+    let entry = new FishEntry(fish, this.processor);
 
     // Don't forget to activate the new entry!!!
     entry.active = true;
@@ -493,7 +510,7 @@ export class ViewModel {
     // Check if this fish has intuition requirements.
     for (let intuitionFish of fish.intuitionFish) {
       let intuitionFishEntry = new IntuitionFishEntry(
-        intuitionFish.data, fish, intuitionFish.count);
+        intuitionFish.data, this.processor, fish, intuitionFish.count);
       intuitionFishEntry.active = true;
       // Initially, FishWatcher only determined if this fish /would/ be up.
       // It doesn't necessarily compute the ranges.

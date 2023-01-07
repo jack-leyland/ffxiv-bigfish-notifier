@@ -7,12 +7,19 @@ const UserSchema = new Schema({
         required: true,
         unique: true
     },
-    notification_actors: {
+    notification_strategies: {
         type: [String],
     },
-    subscribed_fish: {
-        type: [Number]
-    }
+    subscribed_fish: [{
+        type: {
+            fishId: {
+                type: Number
+            },
+            minutes_before: {
+                type: Number
+            }
+        }
+    }]
 })
 
 const UserModel = mongoose.model('user', UserSchema);

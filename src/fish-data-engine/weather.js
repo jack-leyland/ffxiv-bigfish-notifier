@@ -1,13 +1,15 @@
 /**
  * Source from Carbuncle Plushy's ff14-fish-tracker-app.
+ *
+ * Unchanged other than ESM imports/exports.
  * 
- * Unchanged other than ESM imports/exports and calling the initialize function in the constructor.
- * 
- * Full disclosure from Jack: I have no idea how this works. At some point, I may have to learn, but 
- * for now, my testing shows that after all my changes to get rid of the UI related functionality
- * at isolate the stream of real-time fish data, all the data is still correct. So, I 
- * am trying to not touch anything I don;t have to until I have more time learn how that data is actually calculated.
- * 
+ * Full disclosure from Jack: I have no idea how this works. At some point, I
+ * may have to learn, but for now, my testing shows that after all my changes to
+ * get rid of the UI related functionality and isolate the stream of real-time
+ * fish data, all the data is still correct. So, I am trying to not touch
+ * anything I don't have to until I have more time learn how that data is
+ * actually calculated.
+ *
  * Original project: https://github.com/icykoneko/ff14-fish-tracker-app/
  */
 
