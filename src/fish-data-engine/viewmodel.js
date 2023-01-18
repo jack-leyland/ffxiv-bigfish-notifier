@@ -54,6 +54,7 @@ import _ from "underscore"
 import { Fishes } from "./fish.js";
 import { eorzeaTime } from "./time.js";
 import { Subject, merge, interval, buffer, debounceTime, map, filter, timestamp } from "rxjs"
+import { CONFIG } from "../common/config.js";
 
 const weatherService = new WeatherService()
 const fishWatcher = new FishWatcher(weatherService)
@@ -245,7 +246,7 @@ class FishEntry {
       let currEnd = eorzeaTime.toEarth(+crs[0].end);
       // NOTE: If it has one entry, it'll have 2...
       if (crs.length < 2) {
-        console.error("Expected at least 2 catchable ranges for " + fish.name);
+        //console.error("Expected at least 2 catchable ranges for " + fish.name);
         return;
       }
       let nextStart = eorzeaTime.toEarth(+crs[1].start);
@@ -281,7 +282,9 @@ class FishEntry {
 
     //Every time the entry gets updated, we send the updated object to the processor.
     this.processor.ingestEntry(this)
-    this.processor.ensureDatabaseState(this)
+    if (CONFIG.DB_FISH_DATA_REFRESH) {
+      this.processor.ensureDatabaseState(this)
+    }
   }
 }
 
@@ -326,7 +329,7 @@ export class ViewModel {
 
   initializeDisplay() {
     // The main HTML is actually inlined, for the most part.
-    console.time("Initialization");
+    //console.time("Initialization");
 
     // Initialize the "last date". This is used to keep cached relative date
     // text fresh.
@@ -396,7 +399,7 @@ export class ViewModel {
     // Ok, now it's safe to have FishWatcher start listening for the next bell.
     eorzeaTime.currentBellChanged.subscribe(bell => fishWatcher.updateFishes());
 
-    console.timeEnd("Initialization");
+    //console.timeEnd("Initialization");
   }
 
   //JL: Some of this is dead code now given all the changes, but it works so I'm gonna leave it for now.

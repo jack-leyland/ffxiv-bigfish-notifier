@@ -18,6 +18,7 @@ import dateFns from "./dateFns/main.js";
 import { eorzeaTime } from "./time.js";
 import { filter, skip } from "rxjs"
 import _ from "underscore"
+import { dataSourceLogger } from "../common/logger.js";
 
 export function weatherForArea(area, target) {
   if (area in DATA.WEATHER_RATES) {
@@ -64,14 +65,14 @@ export class WeatherService {
   finishedWithIter() {
     // This is basically for testing purposes. It will end our computingWeather timer.
     if (this.computingWeather) {
-      console.timeEnd('computingWeather');
+      //console.timeEnd('computingWeather');
       this.computingWeather = false;
     }
   }
 
   onCurrentBellChanged(bell) {
     if (bell == 0 || bell == 8 || bell == 16) {
-      console.info("Weather interval changed...");
+      dataSourceLogger.info("Weather interval changed...");
       if (this.__weatherData.length > 0) {
         var cutoffDate =
           dateFns.utc.subDays(startOfPeriod(
@@ -80,14 +81,14 @@ export class WeatherService {
           this.__weatherData = _(this.__weatherData).drop();
         }
         if (this.__weatherData.length > 0) {
-          console.debug("Weather Cache:", this.__weatherData.length, "entries spanning",
+          dataSourceLogger.debug("Weather Cache:", this.__weatherData.length, "entries spanning",
             (dateFns.differenceInMilliseconds(
               eorzeaTime.toEarth(
                 dateFns.utc.addHours(_(this.__weatherData).last().date, 8)),
               eorzeaTime.toEarth(_(this.__weatherData).first().date)) / 86400000).toFixed(2),
             "days");
         } else {
-          console.debug("Weather Cache: EMPTY!");
+          dataSourceLogger.debug("Weather Cache: EMPTY!");
         }
       }
     }
@@ -98,7 +99,7 @@ export class WeatherService {
     // Technically, it should be newer by 8 hours...
     if (this.__weatherData.length > 0 && date <= _(this.__weatherData).last().date) {
       // See, previous Carby told me I'm not allowed to record the past.
-      console.error("Attempted to insert record for earlier date.", date);
+      dataSourceLogger.error("Attempted to insert record for earlier date.", date);
       return;
     }
     this.__weatherData.push({ date: +date, target: target });
@@ -167,7 +168,7 @@ export class WeatherService {
     if (!this.computingWeather) {
       // For testing; make sure you don't reuse the timer.
       this.computingWeather = true;
-      console.time('computingWeather');
+      //console.time('computingWeather');
     }
     // SAFEGUARD
     while (limit-- > 0) {

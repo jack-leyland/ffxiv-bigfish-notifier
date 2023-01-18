@@ -14,6 +14,7 @@ import {__p} from "./localization.js"
 import dateFns from "./dateFns/main.js";
 import { eorzeaTime } from "./time.js";
 import rxjs from "rxjs"
+import { dataSourceLogger } from "../common/logger.js";
 
 function shouldLogForFish(fish) {
   return false;
@@ -267,7 +268,7 @@ class Fish {
     //   You should never call this function giving the same range as the last
     //   one. Also, the next range BETTER be AFTER the last one!!!
     if (dateFns.isBefore(nextRange.start, lastRange.end)) {
-      console.error("CRITICAL BUG: The next range starts before the end of the last range!");
+      dataSourceLogger.error("CRITICAL BUG: The next range starts before the end of the last range!");
       return;
     }
     var merged = dateFns.intervalXor(lastRange, nextRange);
@@ -276,7 +277,7 @@ class Fish {
     //   of nothing! But, mistakes happen, and to avoid deleting data by
     //   mistake in addition, we'll just abort right here... and complain...
     if (merged === null || merged.length == 0) {
-      console.error("CRITICAL BUG: merged is empty?!",
+      dataSourceLogger.error("CRITICAL BUG: merged is empty?!",
         {lastRange: dateFns.formatISO(lastRange.start) + " - " + dateFns.formatISO(lastRange.end),
          nextRange: dateFns.formatISO(nextRange.start) + " - " + dateFns.formatISO(nextRange.end)});
       return;

@@ -8,6 +8,7 @@
 
 
 import {interval, timestamp, map, distinctUntilChanged, tap, share} from "rxjs"
+import { dataSourceLogger } from "../common/logger.js";
 import dateFns from "./dateFns/main.js";
 
 export const EARTH_TO_EORZEA = 3600 / 175;
@@ -21,7 +22,7 @@ class EorzeaTime {
       timestamp(),
       map(v => dateFns.utc.getHours(this.toEorzea(v.timestamp))),
       distinctUntilChanged(),
-      tap(v => console.log("Current bell is now:", v)),
+      tap(v => dataSourceLogger.info(`Current bell is now: ${v}`)),
       share()
     );
   }
@@ -43,12 +44,12 @@ class EorzeaTime {
     let origDateNow = Date.now;
     let currDateTime = origDateNow();
     Date.now = () => currDateTime;
-    console.info("ザ・ワールド");
+    dataSourceLogger.info("ザ・ワールド");
     return new Promise(resolve => {
       // Counting on you to not screw us up...
       muda(resolve, ctx);
     }).then(() => {
-      console.info("%s have passed!",
+      dataSourceLogger.info("%s have passed!",
         dateFns.formatDistanceStrict(currDateTime, origDateNow(), { roundingMethod: 'floor' }));
       Date.now = origDateNow;
     });

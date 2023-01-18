@@ -16,6 +16,7 @@
 
 import _ from 'underscore'
 import rxjs from "rxjs"
+import { dataSourceLogger } from '../common/logger.js';
 
 const LANGUAGES = {
   English: "_en",
@@ -57,7 +58,7 @@ export default class LocalizationHelper {
       this.language_suffix = "_" + lang;
       this.languageChanged.next(this.language_suffix);
     } else {
-      console.error("Invalid language choice:", lang);
+      dataSourceLogger.error("Invalid language choice:", lang);
     }
   }
 

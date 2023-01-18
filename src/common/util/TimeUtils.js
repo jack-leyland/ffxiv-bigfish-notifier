@@ -1,4 +1,4 @@
-export function timeDurationInPart(milliseconds) {
+export function timeDurationInParts(milliseconds) {
     const secs = Math.floor(Math.abs(milliseconds) / 1000);
     const mins = Math.floor(secs / 60);
     const hours = Math.floor(mins / 60);

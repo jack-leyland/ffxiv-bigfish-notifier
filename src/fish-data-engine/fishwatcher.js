@@ -13,6 +13,7 @@ import { Fishes } from "./fish.js";
 import { eorzeaTime } from "./time.js";
 import dateFns from "./dateFns/main.js";
 import { startOfPeriod } from "./weather.js";
+import { dataSourceLogger } from "../common/logger.js";
 
 
 export default class FishWatcher {
@@ -42,8 +43,8 @@ export default class FishWatcher {
   }
 
   updateFishes(opts = {}) {
-    console.info("FishWatcher is considering updating fishies >< c> |o.o)>");
-    console.time('updateFishes');
+    dataSourceLogger.info("FishWatcher is considering updating fishies >< c> |o.o)>");
+    //console.time('updateFishes');
 
     // OPTIMIZATION POINT
     // - FishWatcher normally just works on EVERY possible fish.
@@ -70,7 +71,7 @@ export default class FishWatcher {
 
     // CLEANUP PHASE:
     //   Remove expired windows first.
-    console.time('cleanupFish');
+    //console.time('cleanupFish');
     for (let fish of trackedFish) {
       // SAFEGUARD: Consume /all/ expired entries.
       while (fish.catchableRanges.length > 0 &&
@@ -80,11 +81,11 @@ export default class FishWatcher {
         fish.notifyCatchableRangesUpdated();
       }
     }
-    console.timeEnd('cleanupFish');
+    //console.timeEnd('cleanupFish');
 
     // PHASE 1:
     //   Ensure each fish has at least 'n' windows defined.
-    console.time('updateRanges');
+    //console.time('updateRanges');
     for (let fish of trackedFish) {
       if (this._isFishAlwaysUp(fish)) { continue; }
       if (fish.catchableRanges.length >= this.maxWindows) { continue; }
@@ -92,9 +93,9 @@ export default class FishWatcher {
       this.updateRangesForFish(fish, eDate);
     }
 
-    console.timeEnd('updateRanges');
+    //console.timeEnd('updateRanges');
 
-    console.timeEnd('updateFishes');
+    //console.timeEnd('updateFishes');
   }
 
   reinitRangesForFish(fish, opts = {}) {
@@ -174,7 +175,7 @@ export default class FishWatcher {
     while (fish.catchableRanges.length < this.maxWindows) {
       var _iterItem = weatherIter.next();
       if (_iterItem.done) {
-        console.warn("Stopped iterating early for:", fish);
+        dataSourceLogger.warn("Stopped iterating early for:", fish);
         break;
       }
       lastRangeSpansPeriods =

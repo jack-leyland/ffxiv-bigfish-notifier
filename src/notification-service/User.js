@@ -1,72 +1,76 @@
 import { NOTIFICATION_STRATEGIES } from "./NotificationStrategies/index.js";
-import database from "../db/db.js";
+import {logger} from "../common/logger.js";
+import { Subscription } from "rxjs";
 /**
  *  User objects subscribe to the Fish Timers, and dispatch notifications
- *  accordingly. They are initialized from a user db record. Users added by the
- *  client at runtime should save them to the db first. 
+ *  accordingly. Fish subscriptions and intuition fish subsciptions are stored
+ *  in separate tables, this was done to enable the expected client-facing
+ *  functionality of automatically unsubcribing intuition notifcations when the
+ *  parent fishId is unsubscribed from.
  *
- *  The main contraint with this current design is that users rely on a
- *  reference to a CountdownPublisher already running and accepting
- *  subscriptions.
- *
- *  This is resolved at the moment by having the SubscriberManager class be
- *  responsible for the management of User objects such that they'll only be
- *  created once the required conditions are met. That also gives us a way to
- *  manage users at runtime.
+ *  From the perspective of this class though, all subscriptions are equal. 
+ *  This will notify for every fish_id and minutes_condition contained 
+ *  for the user in both subscription tables. The notifcation strategy
+ *  used to send the notification will inform the user if a given notifcation
+ *  is an intuition dependency for another fish they subscribed to.
  *
  * */
 
 class NotificationRequest {
-    constructor(userId, timeUntil, fishId, fishName) {
-        this.userId = userId;
-        this.timeUntil = timeUntil;
-        this.fishId = fishId;
-        this.fishName = fishName;
-    }
+  constructor(userId, timeUntil, fishId) {
+    this.userId = userId;
+    this.timeUntil = timeUntil;
+    this.fishId = fishId;
+  }
 }
 
 export default class User {
-    /**
-     * TODO: We need to make sure that we are subscribed to the intuitionfish we
-     * need as well!
-     */
-    constructor(dbObject, countdownPublisher) {
-        this.timerSource = countdownPublisher;
-        this.userId = dbObject.userId;
-        this.notificationStrategies = dbObject.notification_strategies
-        this.fishNotificationConditions = {}
 
-        for (const fish of dbObject.subscribed_fish) {
-            this.fishNotificationConditions[fish.fishId] = fish.minutes_before
-        }
-        for (const fish in this.fishNotificationConditions) {
-            this.timerSource.fishSubjects[fish].subscribe(this.checkFishConditions.bind(this))
-        }
-    }
+  constructor(userId, countdownPublisher, userSubcriptionRecords, notificationStrategies) {
+    this.userId = userId
+    this.timerSource = countdownPublisher
+    this.notificationStrategies = notificationStrategies
+    this.subscriptions = {}
+    this.fishNotificationConditions = {}
 
-    /**
-     * TODO: Here is where we'll have to put the special checks for intuition
-     * requirements and special fish like the warden.
-     */
-    checkFishConditions(fishTimerUpdate) {
-        let condition = this.fishNotificationConditions[fishTimerUpdate.fishId]
-        for (const timer of fishTimerUpdate.timers) {
-            if (condition === timer.minutes) {
-                this.dispatchNotifications(fishTimerUpdate.fishId, condition)
-            }
+    for (const row of userSubcriptionRecords) {
+      if (!this.fishNotificationConditions[row.fish_id]) {
+        this.fishNotificationConditions[row.fish_id] = new Set([row.minutes_condition])
+        try {        
+          this.subscriptions[row.fish_id] = 
+            this.timerSource.fishSubjects[row.fish_id].subscribe(timerUpdate => this.checkFishConditions(timerUpdate))
+        } catch (err) {
+          logger.warn(`User [${userId}] | Attempted to subscribe to untracked fishId: ${row.fish_id}`)
         }
-        
-    }
 
-    /**
-     * Eventually, we'll probably want to get rid of this global strategies
-     * object in favor of something a little better. 
-     */
-    async dispatchNotifications(fishId, timeCondition) {
-        const fishData = await database.getFishById(fishId, "name_en")
-        for (const strat of this.notificationStrategies) {
-            let request = new NotificationRequest(this.userId, timeCondition, fishId, fishData.name_en)
-            NOTIFICATION_STRATEGIES[strat].sendNotification(request)
-        }
+      } else {
+        this.fishNotificationConditions[row.fish_id].add(row.minutes_condition)
+      }
     }
+    logger.info(`Initialized User: ${userId}`)
+  }
+
+  async checkFishConditions(fishTimersUpdate) {
+    for (const timer of fishTimersUpdate.timers) {
+      if (this.fishNotificationConditions[fishTimersUpdate.fishId].has(timer.minutes)) {
+        await this.dispatchNotifications(fishTimersUpdate.fishId, timer.minutes)
+      }
+    }
+  }
+
+  // How to handle notifcation errors?
+  async dispatchNotifications(fishId, timeCondition) {
+    for (const strat of this.notificationStrategies) {
+      let request = new NotificationRequest(this.userId, timeCondition, fishId)
+      await NOTIFICATION_STRATEGIES[strat].sendNotification(request)
+    }
+  }
+
+  // Must explicitly unsubscribe before this object is destroyed or we'll 
+  // leak memory in the CountdownPublisher.
+  destroy() {
+    for (const id in this.subscriptions) {
+      this.subscriptions[id].unsubscribe()
+    }
+  }
 }

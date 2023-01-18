@@ -1,3 +1,1 @@
-export default CONSTANTS = {
-    
-}
+export const MAXIMUM_NOTIFICATION_TIME = 360
