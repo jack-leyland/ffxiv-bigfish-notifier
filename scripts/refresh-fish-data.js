@@ -30,11 +30,11 @@
  *
  */
 
-import { ViewModel as DataSource } from '../src/fish-data-engine/viewmodel.js'
-import CountdownPublisher from '../src/notification-service/CountdownPublisher.js'
-import FishEntryProcessor from '../src/notification-service/FishEntryProcessor.js'
-import until from '../src/common/util/Until.js'
-import { CONFIG } from '../src/common/config.js'
+import { ViewModel as DataSource } from '../src/notifier/fish-data-engine/viewmodel.js'
+import CountdownPublisher from '../src/notifier/notification-service/CountdownPublisher.js'
+import FishEntryProcessor from '../src/notifier/notification-service/FishEntryProcessor.js'
+import until from '../src/notifier/common/util/Until.js'
+import { CONFIG } from '../src/notifier/common/config.js'
 
 const updateScript = async () => {
     console.log("Performing Fish Data Update.")

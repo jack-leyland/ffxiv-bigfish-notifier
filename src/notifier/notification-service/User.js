@@ -1,6 +1,6 @@
 import { NOTIFICATION_STRATEGIES } from "./NotificationStrategies/index.js";
 import {logger} from "../common/logger.js";
-import { Subscription } from "rxjs";
+
 /**
  *  User objects subscribe to the Fish Timers, and dispatch notifications
  *  accordingly. Fish subscriptions and intuition fish subsciptions are stored

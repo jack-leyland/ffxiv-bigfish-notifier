@@ -1,16 +1,16 @@
 import express from 'express'
 import cors from "cors"
 
-import { ViewModel as DataSource } from './src/fish-data-engine/viewmodel.js'
-import CountdownPublisher from './src/notification-service/CountdownPublisher.js'
-import NotificationService from './src/notification-service/NotificationService.js'
-import FishEntryProcessor from './src/notification-service/FishEntryProcessor.js'
-import SubscriberManager from './src/notification-service/SubscriberManager.js'
-import until from './src/common/util/Until.js'
-import {logger} from './src/common/logger.js'
-import { usersRouter } from './src/routes/Users.js'
-import { subscriptionsRouter } from './src/routes/Subscriptions.js'
-import { CONFIG } from './src/common/config.js'
+import { ViewModel as DataSource } from './fish-data-engine/viewmodel.js'
+import CountdownPublisher from './notification-service/CountdownPublisher.js'
+import NotificationService from './notification-service/NotificationService.js'
+import FishEntryProcessor from './notification-service/FishEntryProcessor.js'
+import SubscriberManager from './notification-service/SubscriberManager.js'
+import until from './common/util/Until.js'
+import {logger} from './common/logger.js'
+import { usersRouter } from './routes/Users.js'
+import { subscriptionsRouter } from './routes/Subscriptions.js'
+import { CONFIG } from './common/config.js'
 
 // Because of the one minute tick on the fish timers, the subscriber manager has
 // to wait for the initial tick in order for the fish timer rxjs subjects to

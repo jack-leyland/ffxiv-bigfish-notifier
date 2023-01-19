@@ -1,8 +1,13 @@
-import {logger} from "../common/logger.js";
+import { logger } from "../common/logger.js";
 import database from "../db/db.js"
 import until from "../common/util/Until.js"
 import { MAXIMUM_NOTIFICATION_TIME } from "../common/constants.js"
-import { FishNameNotFoundError, InternalError, SubscriptionAlreadyExistsError, UnsupportedNotificationPeriodError, UserAlreadyExistsError, UserNotFoundError } from "./Errors.js";
+import { 
+  FishNameNotFoundError, 
+  InternalError, 
+  SubscriptionAlreadyExistsError, 
+  UnsupportedNotificationPeriodError 
+} from "./Errors.js";
 
 // This class is the top-level entry into the notifcation service, it defines
 // the set of actions the client can take when interacting with the notifcation

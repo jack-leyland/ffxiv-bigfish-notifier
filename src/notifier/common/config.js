@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv'
 import path from "path"
 const __dirname = path.resolve();
-dotenv.config()
+dotenv.config({path: path.resolve(__dirname,"./src/notifier/.env")})
 
 export const CONFIG = {
     //Overridden manually by db refresh script
@@ -12,3 +12,5 @@ export const CONFIG = {
     LOG_FILE_PATH: process.env.LOG_FILE_PATH,
     PORT: process.env.PORT,
 }
+
+console.dir(CONFIG)
