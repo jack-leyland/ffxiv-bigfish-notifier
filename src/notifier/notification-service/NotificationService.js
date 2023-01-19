@@ -8,6 +8,7 @@ import {
   SubscriptionAlreadyExistsError, 
   UnsupportedNotificationPeriodError 
 } from "./Errors.js";
+import { is } from "date-fns/locale";
 
 // This class is the top-level entry into the notifcation service, it defines
 // the set of actions the client can take when interacting with the notifcation
@@ -39,11 +40,14 @@ export default class NotificationService {
    * only be discord. Throws if the user is already registered for that
    * strategy.
    */
-  async registerUser(notificationStrategy, strategyId) {
+  async registerUser(notificationStrategy, strategyId, isDiscordChannel) {
     switch (notificationStrategy.toLowerCase()) {
       case "discord":
         try {
-          await database.createNewDiscordUserRecord(strategyId);
+          if (isDiscordChannel === undefined) {
+            throw new Error("Must set IsDiscordChannel parameter for discord strategy registration.")
+          }
+          await database.createNewDiscordUserRecord(strategyId, !!isDiscordChannel);
         } catch (err) {
           if (err.type && err.type === "UserAlreadyExistsError") {
             throw err

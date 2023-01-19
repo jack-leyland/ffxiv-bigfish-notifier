@@ -4,12 +4,12 @@ const router = Router()
 export const usersRouter = (notifcationService) => {
     router.post('/',
         async (req, res, next) => {
-            if (!req.body.id || !req.body.strategy) {
+            if (!req.body.id || !req.body.strategy || !req.body.isDiscordChannel) {
                 res.status(400).end()
                 return
             }
             try {
-                await notifcationService.registerUser(req.body.strategy, req.body.id)
+                await notifcationService.registerUser(req.body.strategy, req.body.id, req.body.isDiscordChannel)
                 res.json({
                     success: true
                 })

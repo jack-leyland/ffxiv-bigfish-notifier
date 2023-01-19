@@ -19,7 +19,8 @@ export const Tables = [
     )`,
     `CREATE TABLE IF NOT EXISTS users (
         user_id TEXT PRIMARY KEY,
-        discord_id INTEGER UNIQUE
+        discord_id INTEGER UNIQUE,
+        is_channel BOOLEAN NOT NULL
     )`,
     `CREATE TABLE IF NOT EXISTS notification_strategies (
         user_id TEXT NOT NULL,

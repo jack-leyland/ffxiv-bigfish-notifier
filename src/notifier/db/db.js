@@ -72,24 +72,10 @@ class DatabaseClient {
         return res
     }
 
-    async getAllUserIdentities(userId) {
-        let values = [userId]
-        let query = `SELECT * FROM users WHERE user_id=$1`
-        let res = await this.client.query(query,values)
-            .then(res => {
-                return res.rows[0]
-            })
-            .catch(err => {
-                logger.error(err)
-                throw new InternalDatabaseError(`Unable to retrieve identities for userId: ${userId}`)
-            })
-        return res
-    }
-
-    async createNewDiscordUserRecord(discordId) {
+    async createNewDiscordUserRecord(discordId, isChannel) {
         let id = uuid()
-        let userValues= [id, discordId]
-        let userQuery = `INSERT INTO users(user_id, discord_id) VALUES($1, $2)`
+        let userValues= [id, discordId, isChannel]
+        let userQuery = `INSERT INTO users(user_id, discord_id, is_channel) VALUES($1, $2, $3)`
         let strategyQuery = `INSERT INTO notification_strategies VALUES($1, $2)`
         let strategyValues = [id, "discord"]
         try {
@@ -101,7 +87,7 @@ class DatabaseClient {
             await this.client.query("ROLLBACK")
 
             if (err.constraint === 'unique_discord_id') {
-                throw new UserAlreadyExistsError(`Discord user ID ${discordId} already exists.`)
+                throw new UserAlreadyExistsError(`Discord ID ${discordId} already exists.`)
             } else {
                 logger.error(err)
                 throw new InternalDatabaseError('Failed to create new user.')
