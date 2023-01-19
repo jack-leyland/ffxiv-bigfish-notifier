@@ -1,11 +1,9 @@
-import * as dotenv from 'dotenv'
 import path from "path"
 const __dirname = path.resolve();
-dotenv.config({ path: path.resolve(__dirname, "./src/discord-client/.env") })
 import fs from 'fs';
 import { Client, Events, GatewayIntentBits, Collection } from "discord.js"
 
-const TOKEN = process.env.NODE_ENV === "production" ? process.env.BOT_TOKEN : process.env.DEV_BOT_TOKEN
+import CONFIG from './common/config.js';
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -41,4 +39,4 @@ client.on(Events.InteractionCreate, async interaction => {
     }
 });
 
-client.login(TOKEN);
+client.login(CONFIG.TOKEN);

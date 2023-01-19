@@ -2,17 +2,12 @@
  * Running this in a prod environment will push command info to all 
  * server. We don't want to do that very often so be careful.
  */
-
-import * as dotenv from 'dotenv'
 import path from "path"
 const __dirname = path.resolve();
-dotenv.config({ path: path.resolve(__dirname, "./src/discord-client/.env") })
 import { REST, Routes } from 'discord.js';
 import fs from 'fs';
 
-const isProd = process.env.NODE_ENV === "production"
-const TOKEN = isProd ? process.env.BOT_TOKEN : process.env.DEV_BOT_TOKEN
-const CLIENT_ID = isProd ? process.env.CLIENT_ID : process.env.DEV_CLIENT_ID
+import CONFIG from '../src/discord-client/common/config.js';
 
 const commands = [];
 const commandsPath = path.resolve(__dirname, './src/discord-client/commands');
@@ -29,21 +24,21 @@ for (const file of commandFiles) {
 }
 
 // Construct and prepare an instance of the REST module
-const rest = new REST({ version: '10' }).setToken(TOKEN);
+const rest = new REST({ version: '10' }).setToken(CONFIG.TOKEN);
 
 (async () => {
 	try {
 		console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
-        if (isProd) {
+        if (CONFIG.IS_PRODUCTION) {
             const data = await rest.put(
-                Routes.applicationGuildCommands(CLIENT_ID),
+                Routes.applicationGuildCommands(CONFIG.CLIENT_ID),
                 { body: commands },
             );
             console.log(`Successfully reloaded ${data.length} application (/) commands.`);
         } else {
             const data = await rest.put(
-                Routes.applicationGuildCommands(CLIENT_ID, process.env.TESTING_SERVER_ID),
+                Routes.applicationGuildCommands(CONFIG.CLIENT_ID, CONFIG.TESTING_SERVER_ID),
                 { body: commands },
             );
             console.log(`Successfully reloaded ${data.length} application (/) commands.`);

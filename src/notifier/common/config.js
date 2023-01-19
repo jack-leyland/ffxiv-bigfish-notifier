@@ -12,5 +12,3 @@ export const CONFIG = {
     LOG_FILE_PATH: process.env.LOG_FILE_PATH,
     PORT: process.env.PORT,
 }
-
-console.dir(CONFIG)
