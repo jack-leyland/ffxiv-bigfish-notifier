@@ -6,7 +6,8 @@ dotenv.config({ path: path.resolve(__dirname, "./src/discord-client/.env") })
 const CONFIG = {
     IS_PRODUCTION: process.env.NODE_ENV === "production",
     LOG_FILE_PATH: process.env.LOG_FILE_PATH,
-    PORT: process.env.PORT
+    PORT: process.env.PORT,
+    ROOT_SUBSCRIPTION_ENDPOINT: process.env.ROOT_SUBSCRIPTION_ENDPOINT
 }
 
 if (CONFIG.IS_PRODUCTION) {

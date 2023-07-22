@@ -12,6 +12,7 @@ import { usersRouter } from './routes/Users.js'
 import { subscriptionsRouter } from './routes/Subscriptions.js'
 import { CONFIG } from './common/config.js'
 
+
 // Because of the one minute tick on the fish timers, the subscriber manager has
 // to wait for the initial tick in order for the fish timer rxjs subjects to
 // exist before it can initialize users and their subscriptions. In that first
@@ -55,9 +56,7 @@ const startServer = async () => {
   app.listen(CONFIG.PORT, function () {
     console.log(`Listing on port ${CONFIG.PORT}!`)
   })
-
 }
-
 
 startServer()
 

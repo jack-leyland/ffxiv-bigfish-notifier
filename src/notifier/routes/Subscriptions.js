@@ -52,6 +52,7 @@ export const subscriptionsRouter = (notifcationService) => {
                 res.status(400).send()
                 return
             }
+            
             if (!req.body.fishName || !req.body.minutes || req.body.intuition === undefined) {
                 res.status(400).send()
                 return
@@ -103,7 +104,6 @@ export const subscriptionsRouter = (notifcationService) => {
     router.delete('/',
         async (req, res, next) => {
             if (!req.query.strategy || !req.query.subId) {
-                console.log("herre")
                 res.status(400).send()
                 return
             }

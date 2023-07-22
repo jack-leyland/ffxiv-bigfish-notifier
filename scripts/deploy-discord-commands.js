@@ -15,15 +15,12 @@ const commandFiles = fs
     .readdirSync(commandsPath)
     .filter((file) => file.endsWith('.js'));
 
-
-// Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
 for (const file of commandFiles) {
     const filePath = path.resolve(commandsPath, file);
     const { default: command } = await import(filePath);
 	commands.push(command.data.toJSON());
 }
 
-// Construct and prepare an instance of the REST module
 const rest = new REST({ version: '10' }).setToken(CONFIG.TOKEN);
 
 (async () => {

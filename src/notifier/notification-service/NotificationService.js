@@ -8,7 +8,6 @@ import {
   SubscriptionAlreadyExistsError, 
   UnsupportedNotificationPeriodError 
 } from "./Errors.js";
-import { is } from "date-fns/locale";
 
 // This class is the top-level entry into the notifcation service, it defines
 // the set of actions the client can take when interacting with the notifcation
@@ -93,6 +92,12 @@ export default class NotificationService {
       }
 
       let intuitionRequirements = await database.getTimedIntuitionRequirementsForFish(fishData.fish_id)
+      
+      //if its not new and there arent inuition requirements, tell the user.
+      if (!newSubscriptionId && intuitionRequirements.length === 0) {
+        throw new SubscriptionAlreadyExistsError()
+      }
+
       // If the flag is set but there aren't any intuition fish anyways then return 
       if (!intuitionFlag || !intuitionRequirements) {
         await this.subscriberManager.loadUserRecord(userId)
@@ -182,6 +187,20 @@ export default class NotificationService {
       throw new InternalError()
     }
   }
+
+
+    /**
+   * Any associated intuition subscriptions will also be removed.
+   * 
+   */
+    async deleteAllUserSubscriptions(userId) {
+      try {
+        await database.deleteSubscription(subId)
+      } catch (err) {
+        logger.error(err)
+        throw new InternalError()
+      }
+    }
 
   async removeUser(strategy, strategyId) {
     switch (strategy.toLowerCase()) {
